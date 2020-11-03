@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <link rel="stylesheet" href="./lib/bootstrap.css">
+</head>
+<body>
+
+<div id="a1">
+
+    <comment_box @func="loadComments"></comment_box>
+    <ul class="list-group">
+        <li class="list-group-item" v-for="item in list" :key="item.id">
+            <span class="badge">{{item.publisher}} 发表于 {{dateFormat(item.created_at)}}</span>
+            {{item.content}}
+        </li>
+    </ul>
+</div>
+
+<template id="temp1">
+    <div>
+        <div class="form-group">
+            <label>评论者：</label>
+            <input type="text" class="form-control" v-model="publisher">
+        </div>
+        <div class="form-group">
+            <label>评论内容：</label>
+            <textarea class="form-control" v-model="content"></textarea>
+        </div>
+        <div class="form-group">
+            <input type="button" value="发表" class="btn btn-primary"
+                   @click="postComment">
+        </div>
+    </div>
+</template>
+
+<script>
+    var commentBox = {
+        data(){
+            return{
+                publisher:'',
+                content:''
+            }
+        },
+        template: '#temp1',
+        methods: {
+            postComment(){
+                var comment = {id:Date.now(),publisher:this.publisher,content:this.content,created_at:Date.now()}
+                var list = JSON.parse(localStorage.getItem("cmts") || '[]')
+                list.unshift(comment)
+                localStorage.setItem('cmts',JSON.stringify(list))
+                this.publisher = this.content = ''
+                this.$emit('func')
+            }
+        }
+    }
+    var vm = new Vue({
+        el: '#a1',
+        data: {
+            list: [
+                // {id: Date.now(), publisher: '张三', content: '呜呜呜', created_at: Date.now()},
+                // {id: Date.now(), publisher: '李四', content: '哇哇哇', created_at: Date.now()},
+                // {id: Date.now(), publisher: '王五', content: '哦哦哦', created_at: Date.now()}
+            ]
+        },
+        created(){
+            this.loadComments()
+        },
+        methods: {
+            dateFormat:function(time) {
+                var date=new Date(time);
+                var year=date.getFullYear();
+                var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+                var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+                var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+                var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+                var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+                // 拼接
+                return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+            },
+            loadComments(){
+                var list = JSON.parse(localStorage.getItem("cmts") || '[]')
+                this.list = list
+            }
+        },
+        components: {
+            'comment_box': commentBox
+        }
+    })
+
+</script>
+</body>
+</html>
