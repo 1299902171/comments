@@ -4,53 +4,122 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-    <link rel="stylesheet" href="./lib/bootstrap.css">
+    <!--    <link rel="stylesheet" href="./lib/bootstrap.css">-->
+    <style>
+        .d1 {
+            width: 80%;
+            text-align: center;
+        }
+
+        .dd1 {
+            padding: 10px 6px;
+            border: 2px solid #c0a16b;
+            margin-top: 10px;
+            margin-left: 30px;
+            border-radius: 5px;
+        }
+
+        .dd2 {
+            height: 150px;
+            padding: 10px 6px;
+            border: 2px solid #c0a16b;
+            margin-top: 10px;
+            margin-left: 30px;
+            border-radius: 5px;
+        }
+
+        .dd3 {
+            margin-top: 10px;
+            margin-left: 30px;
+            border-radius: 5px;
+        }
+
+        .i1 {
+            width: 80%;
+            margin-left: 15px;
+            height: 30px;
+            font-size: 18px;
+        }
+
+        .i2 {
+            width: 80%;
+            height: 90%;
+            font-size: 18px;
+        }
+
+        .i3 {
+            width: 120px;
+            height: 40px;
+            font-size: 15px;
+        }
+
+        .u {
+            width: 80%;
+            list-style: none;
+        }
+
+        .l {
+            height: 45px;
+            width: 96%;
+            font-size: 20px;
+
+        }
+
+        .s {
+            padding: 0 7px;
+            float: right;
+            font-size: 15px;
+            background-color: #5bc0de;
+            border-radius: 9px;
+        }
+    </style>
 </head>
 <body>
 
 <div id="a1">
 
     <comment_box @func="loadComments"></comment_box>
-    <ul class="list-group">
-        <li class="list-group-item" v-for="item in list" :key="item.id">
-            <span class="badge">{{item.publisher}} 发表于 {{dateFormat(item.created_at)}}</span>
+    <ul class="u">
+        <li class="l" v-for="item in list" :key="item.id">
             {{item.content}}
+            <span class="s">{{item.publisher}} 发表于 {{getFormatTime(item.created_at)}}</span>
+            <hr>
         </li>
     </ul>
 </div>
 
 <template id="temp1">
-    <div>
-        <div class="form-group">
+    <div class="d1">
+        <div class="dd1">
             <label>评论者：</label>
-            <input type="text" class="form-control" v-model="publisher">
+            <input type="text" class="i1" v-model="publisher">
         </div>
-        <div class="form-group">
+        <div class="dd2">
             <label>评论内容：</label>
-            <textarea class="form-control" v-model="content"></textarea>
+            <textarea class="i2" v-model="content"></textarea>
         </div>
-        <div class="form-group">
-            <input type="button" value="发表" class="btn btn-primary"
-                   @click="postComment">
+        <div class="dd3">
+            <input type="button" value="发表" class="i3" @click="postComment">
         </div>
+        <hr style="text-align: center;height: 2px;margin-left: 25px;background-color: black;">
     </div>
 </template>
 
 <script>
     var commentBox = {
-        data(){
-            return{
-                publisher:'',
-                content:''
+        data() {
+            return {
+                publisher: '',
+                content: ''
             }
         },
-        template: '#temp1',
+        template: "#temp1",
         methods: {
-            postComment(){
-                var comment = {id:Date.now(),publisher:this.publisher,content:this.content,created_at:Date.now()}
+            postComment() {
+                var comment = {id: Date.now(), publisher: this.publisher, content: this.content, created_at: Date.now()}
                 var list = JSON.parse(localStorage.getItem("cmts") || '[]')
                 list.unshift(comment)
-                localStorage.setItem('cmts',JSON.stringify(list))
+                localStorage.setItem('cmts', JSON.stringify(list))
                 this.publisher = this.content = ''
                 this.$emit('func')
             }
@@ -59,28 +128,42 @@
     var vm = new Vue({
         el: '#a1',
         data: {
-            list: [
-                // {id: Date.now(), publisher: '张三', content: '呜呜呜', created_at: Date.now()},
-                // {id: Date.now(), publisher: '李四', content: '哇哇哇', created_at: Date.now()},
-                // {id: Date.now(), publisher: '王五', content: '哦哦哦', created_at: Date.now()}
-            ]
+            list: []
         },
-        created(){
+        created() {
             this.loadComments()
         },
         methods: {
-            dateFormat:function(time) {
-                var date=new Date(time);
-                var year=date.getFullYear();
-                var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
-                var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
-                var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
-                var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
-                var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
-                // 拼接
-                return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+            getFormatTime2: function (time) {
+                var date = new Date(time);
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
             },
-            loadComments(){
+            getFormatTime: function (timestamp) {
+                var now = this.getUnix();    //当前时间戳
+                var timer = (now - timestamp) / 1000;   // 转换为秒级时间戳
+                var tip = '';
+                if (timer <= 600) {
+                    tip = Math.ceil(timer / 60) + '分钟前';
+                } else if (timer >= 600 && timer < 86400) {
+                    tip = Math.ceil(timer / 3600) + '小时前';
+                } else if (timer >= 86400 && timer < 86400 * 2) {
+                    tip = Math.ceil(timer / 86400) + '天前';
+                } else {
+                    tip = this.getFormatTime2(timestamp);
+                }
+                return tip;
+            },
+            getUnix: function () {
+                var date = new Date();
+                return date.getTime();
+            },
+            loadComments() {
                 var list = JSON.parse(localStorage.getItem("cmts") || '[]')
                 this.list = list
             }
